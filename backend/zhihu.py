@@ -47,14 +47,30 @@ def yield_video_m3u8_url_from_video_ids(video_ids):
 def download(url):
     video_ids = get_video_ids_from_url(url)
     m3u8_tuples = list(yield_video_m3u8_url_from_video_ids(video_ids))
+    rets = []
 
     for idx, m3u8_url in m3u8_tuples:
-        filename = '{}.mp4'.format(uuid.uuid4())
+        filename = 'videos/zhihu/{}.mp4'.format(uuid.uuid4())
         print('download {}'.format(m3u8_url))
-        subprocess.call(['ffmpeg', '-i', m3u8_url, filename])
+        # subprocess.call(['ffmpeg', '-i', m3u8_url, filename])
+        ret_code = subprocess.check_call(['ffmpeg', '-i', m3u8_url, filename])
+        if ret_code == 0:
+            ret = {
+                'status': 'success',
+                'data': filename,
+                "message": "下载成功"
+            }
+        else:
+            ret = {
+                'status': 'error',
+                "message": "下载失败，请稍后再试"
+            }
+        rets.append(ret.copy())
+    else:
+        return rets
 
 
 if __name__ == '__main__':
     # 贴上你需要下载的 回答或者文章的链接
-    url = 'https://www.zhihu.com/question/277411517/answer/394112534'
-    download(url)
+    seed = 'https://www.zhihu.com/question/277411517/answer/394112534'
+    download(seed)
