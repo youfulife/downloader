@@ -4,6 +4,10 @@ from random import *
 from backend import zhihu
 from furl import furl
 import sys
+import os
+
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 # print(sys.path)
 
@@ -11,7 +15,7 @@ app = Flask(__name__,
             static_folder="./dist/static",
             template_folder="./dist")
 
-cors = CORS(app, resources={"/api/*": {"origins": "*"}})
+cors = CORS(app, resources={"/video/*": {"origins": "*"}})
 
 
 @app.route('/api/random')
@@ -33,10 +37,10 @@ def video_zhihu():
                 "status": "error",
                 "message": "下载失败，请稍后再试"
             })
-        results = zhihu.download(url)
+        results = zhihu.download(url, directory=basedir)
         return jsonify(results)
 
-    file = furl(request.url).args['file']
+    file = request.args.get('file')
     print("download file: ", file)
     file_path = 'video/zhihu/' + file
     return redirect(url_for('static', filename=file_path))

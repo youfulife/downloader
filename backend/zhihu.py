@@ -44,13 +44,13 @@ def yield_video_m3u8_url_from_video_ids(video_ids):
         yield video_id, m3u8_url
 
 
-def download(url):
+def download(url, directory):
     video_ids = get_video_ids_from_url(url)
     m3u8_tuples = list(yield_video_m3u8_url_from_video_ids(video_ids))
     rets = []
 
     for idx, m3u8_url in m3u8_tuples:
-        filename = 'videos/zhihu/{}.mp4'.format(uuid.uuid4())
+        filename = '{}/dist/static/video/zhihu/{}.mp4'.format(directory, uuid.uuid4())
         print('download {}'.format(m3u8_url))
         # subprocess.call(['ffmpeg', '-i', m3u8_url, filename])
         ret_code = subprocess.check_call(['ffmpeg', '-i', m3u8_url, filename])
