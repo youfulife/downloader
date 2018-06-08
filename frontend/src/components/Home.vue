@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div role="group">
     <p>小视频下载</p>
     <p>Random number from backend: {{ randomNumber }}</p>
     <b-container fluid>
@@ -8,8 +8,6 @@
         <b-col sm="9"><button @click="getVideo">下载</button></b-col>
       </b-row>
     </b-container>
-  </div>
-  <div role="group">
     <b-row>
       <b-col sm="9">
         <b-form-input id="inputLive"
@@ -62,4 +60,3 @@ export default {
   }
 }
 </script>
-

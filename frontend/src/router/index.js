@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 const routerOptions = [
   { path: '/', component: 'Home' },
@@ -16,6 +19,7 @@ const routes = routerOptions.map(route => {
 })
 
 Vue.use(Router)
+Vue.use(BootstrapVue)
 
 export default new Router({
   routes,
