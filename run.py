@@ -22,8 +22,8 @@ def random_number():
     return jsonify(response)
 
 
-@app.route('/video/zhihu/<file_name>', methods=['GET', 'POST'])
-def video_zhihu(file_name):
+@app.route('/video/zhihu', methods=['GET', 'POST'])
+def video_zhihu():
     if request.method == 'POST':
         content = request.get_json(silent=True)
         print(content)
@@ -36,9 +36,10 @@ def video_zhihu(file_name):
         results = zhihu.download(url)
         return jsonify(results)
 
-    file_path = furl(request.url).path
-    print("download file: ", file_path)
-    return redirect(file_path)
+    file = furl(request.url).args['file']
+    print("download file: ", file)
+    file_path = 'video/zhihu/' + file
+    return redirect(url_for('static', filename=file_path))
 
 
 @app.route('/', defaults={'path': ''})
