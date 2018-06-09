@@ -1,32 +1,25 @@
 <template>
-  <div role="group">
+  <div>
     <p>小视频下载</p>
     <p>Random number from backend: {{ randomNumber }}</p>
-    <b-container fluid>
-      <b-row>
-        <b-col sm="9"><b-form-input placeholder="输入知乎回答URL地址" v-model="seed"></b-form-input></b-col>
-        <b-col sm="9"><button @click="getVideo">下载</button></b-col>
-      </b-row>
-    </b-container>
-    <b-row>
-      <b-col sm="9">
-        <b-form-input id="inputLive"
+    <b-form @submit="onSubmit" v-if="show">
+      <b-form-group id="fieldset1"
+                    description="示例：https://www.zhihu.com/question/xxx/answer/xxx"
+                    label=""
+                    label-for="input1"
+                    :invalid-feedback="invalidFeedback"
+                    :valid-feedback="validFeedback"
+                    :state="state">
+        <b-form-input id="input1"
+                      :state="state"
                       v-model.trim="seed"
-                      type="text"
-                      :state="nameState"
-                      aria-describedby="inputLiveHelp inputLiveFeedback"
-                      placeholder=""></b-form-input>
-        <b-form-invalid-feedback id="inputLiveFeedback">
-          <!-- This will only be shown if the preceeding input has an invalid state -->
-          地址不能为空
-        </b-form-invalid-feedback>
-        <b-form-text id="inputLiveHelp">
-          <!-- this is a form text block (formerly known as help block) -->
-          包含视频的知乎回答完整URL地址
-        </b-form-text>
-      </b-col>
-      <b-col sm="9"><button @click="getVideo">下载</button></b-col>
-    </b-row>
+                      required>
+        </b-form-input>
+      </b-form-group>
+      <b-button type="submit" variant="primary">下载</b-button>
+    </b-form>
+    <b-progress :progress="25" variant="success" :striped="striped" class="mb-2"></b-progress>
+
   </div>
 </template>
 
@@ -34,24 +27,53 @@
 import axios from 'axios'
 
 export default {
-  data () {
-    return {
-      randomNumber: 0,
-      seed: null
+  computed: {
+    state () {
+      return this.seed.length >= 4
+    },
+    invalidFeedback () {
+      if (this.seed.length > 4) {
+        return ''
+      } else {
+        return '请输入包含视频的知乎回答链接'
+      }
+    },
+    validFeedback () {
+      return this.state === true ? 'Thank you' : ''
     }
   },
+  data () {
+    return {
+      progress: 10,
+      show: true,
+      striped: true,
+      seed: '',
+      video: '',
+      timer: null
+    }
+  },
+  mounted () {
+    this.timer = setInterval(() => {
+      this.progress = 25 + (Math.random() * 75)
+    }, 2000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
+    this.timer = null
+  },
   methods: {
-    getVideo () {
-      // this.randomNumber = this.getRandomInt(1, 100)
-      this.randomNumber = this.getRandomFromBackend()
+    onSubmit (evt) {
+      evt.preventDefault()
+      this.download()
+      // alert(JSON.stringify(this.form));
     },
-    getRandomFromBackend () {
+    download () {
       const path = 'http://localhost:5000/video/zhihu'
       axios.post(path, {
         url: this.seed
       })
         .then(response => {
-          this.randomNumber = response.data
+          this.video = response.data
         })
         .catch(error => {
           console.log(error)
