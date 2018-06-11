@@ -18,7 +18,8 @@
       </b-form-group>
       <b-button type="submit" variant="primary">下载</b-button>
     </b-form>
-    <b-progress :progress="25" variant="success" :striped="striped" class="mb-2"></b-progress>
+
+    <b-progress :value="progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
 
   </div>
 </template>
@@ -44,9 +45,12 @@ export default {
   },
   data () {
     return {
+      // 进度条
       progress: 10,
-      show: true,
       striped: true,
+      animate: true,
+
+      show: true,
       seed: '',
       video: '',
       timer: null
