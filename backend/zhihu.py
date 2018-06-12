@@ -50,14 +50,15 @@ def download(url, directory):
     rets = []
 
     for idx, m3u8_url in m3u8_tuples:
-        filename = '{}/dist/static/video/zhihu/{}.mp4'.format(directory, uuid.uuid4())
+        prefix = directory + '/dist/'
+        filename = 'static/video/zhihu/{}.mp4'.format(uuid.uuid4())
         print('download {}'.format(m3u8_url))
         # subprocess.call(['ffmpeg', '-i', m3u8_url, filename])
-        ret_code = subprocess.check_call(['ffmpeg', '-i', m3u8_url, filename])
+        ret_code = subprocess.check_call(['ffmpeg', '-i', m3u8_url, prefix+filename])
         if ret_code == 0:
             ret = {
                 'status': 'success',
-                'data': filename,
+                'video': filename,
                 "message": "下载成功"
             }
         else:

@@ -1,7 +1,6 @@
 <template>
   <div>
     <p>小视频下载</p>
-    <p>Random number from backend: {{ randomNumber }}</p>
     <b-form @submit="onSubmit" v-if="show">
       <b-form-group id="fieldset1"
                     description="示例：https://www.zhihu.com/question/xxx/answer/xxx"
@@ -20,7 +19,13 @@
     </b-form>
 
     <b-progress :value="progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
+    <p>下载地址: {{ video }}</p>
 
+    <b-embed type="video" aspect="4by3" controls>
+      <div v-for="item in items" :key="item.video">
+        <source  :src="item.video" type='video/mp4'/>
+      </div>
+    </b-embed>
   </div>
 </template>
 
@@ -52,7 +57,7 @@ export default {
 
       show: true,
       seed: '',
-      video: '',
+      items: [],
       timer: null
     }
   },
@@ -77,7 +82,7 @@ export default {
         url: this.seed
       })
         .then(response => {
-          this.video = response.data
+          this.items = response.data
         })
         .catch(error => {
           console.log(error)
