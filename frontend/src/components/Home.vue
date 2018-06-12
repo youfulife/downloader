@@ -22,9 +22,7 @@
     <p>下载地址: {{ video }}</p>
 
     <b-embed type="video" aspect="4by3" controls>
-      <div v-for="item in items" :key="item.video">
-        <source  :src="item.video" type='video/mp4'/>
-      </div>
+      <source v-for="item in items" :key="item.video" :src="item.video" type='video/mp4'/>
     </b-embed>
   </div>
 </template>
