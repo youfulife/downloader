@@ -2,9 +2,21 @@ import re
 import uuid
 import subprocess
 import json
-from . import ffmpeg
-
+import redis
+import threading
 import requests
+import os
+import sys
+
+# file_dir = os.path.dirname(__file__)
+# sys.path.append(file_dir)
+# print(sys.path)
+import ffmpeg
+
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 # 下边 cookie 请打开知乎打开浏览器开发者工具随便找一个请求复制 cookie，千万不要泄露出去
 HEADERS = {
@@ -45,6 +57,29 @@ def yield_video_m3u8_url_from_video_ids(video_ids):
         yield video_id, m3u8_url
 
 
+def progress(m3u8_url, output_file):
+    # '/path/to/dist/static/video/zhihu/xxx-yyy.mp4'
+    key = output_file.split('/')[-1].split('.')[0]
+    cmd = "ffmpeg -v quiet -progress /dev/stdout -i '{input}' {output}".format(input=m3u8_url, output=output_file)
+    # cmd = "cat xxx.txt"
+    print(cmd)
+    child1 = subprocess.Popen(cmd, cwd=basedir, shell=True, stdout=subprocess.PIPE)
+    # https://stackoverflow.com/questions/7161821/how-to-grep-a-continuous-stream
+    cmd2 = "grep --line-buffered -e out_time_ms -e progress"
+    child2 = subprocess.Popen(cmd2, shell=True, stdin=child1.stdout, stdout=subprocess.PIPE)
+    for line in iter(child2.stdout.readline, b''):
+        tmp = line.decode('utf-8').strip().split('=')
+        
+        if tmp[0] == 'out_time_ms':
+            out_time_ms = tmp[1]
+            print(out_time_ms)
+            r.set(key, out_time_ms)
+        else:
+            if tmp[1] == 'end':
+                r.delete(key)
+                print("download complete")
+
+
 def download(url, directory):
     video_ids = get_video_ids_from_url(url)
     m3u8_tuples = list(yield_video_m3u8_url_from_video_ids(video_ids))
@@ -55,6 +90,7 @@ def download(url, directory):
         filename = 'static/video/zhihu/{}.mp4'.format(uuid.uuid4())
         print('download {}'.format(m3u8_url))
         duration = ffmpeg.duration_seconds(m3u8_url)
+        threading.Thread(target=progress, args=(m3u8_url, prefix+filename,)).start()
         # ret_code = subprocess.check_call(['ffmpeg', '-v', 'quiet', '-progress', '/dev/stdout', '-i', m3u8_url, prefix+filename])
         if duration != 0:
             ret = {
