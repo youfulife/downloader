@@ -1,4 +1,5 @@
 *.pyc
+*.mp4
 .idea
 .vscode
 __pycache__

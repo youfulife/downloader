@@ -2,6 +2,7 @@ import re
 import uuid
 import subprocess
 import json
+from . import ffmpeg
 
 import requests
 
@@ -53,17 +54,19 @@ def download(url, directory):
         prefix = directory + '/dist/'
         filename = 'static/video/zhihu/{}.mp4'.format(uuid.uuid4())
         print('download {}'.format(m3u8_url))
-        # subprocess.call(['ffmpeg', '-i', m3u8_url, filename])
-        ret_code = subprocess.check_call(['ffmpeg', '-i', m3u8_url, prefix+filename])
-        if ret_code == 0:
+        duration = ffmpeg.duration_seconds(m3u8_url)
+        # ret_code = subprocess.check_call(['ffmpeg', '-v', 'quiet', '-progress', '/dev/stdout', '-i', m3u8_url, prefix+filename])
+        if duration != 0:
             ret = {
                 'status': 'success',
                 'video': filename,
-                "message": "下载成功"
+                'duration': duration,
+                "message": "正在下载"
             }
         else:
             ret = {
                 'status': 'error',
+                'duration': 0,
                 "message": "下载失败，请稍后再试"
             }
         rets.append(ret.copy())
@@ -74,4 +77,4 @@ def download(url, directory):
 if __name__ == '__main__':
     # 贴上你需要下载的 回答或者文章的链接
     seed = 'https://www.zhihu.com/question/277411517/answer/394112534'
-    download(seed)
+    download(seed, '..')

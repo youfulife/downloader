@@ -17,13 +17,14 @@
       </b-form-group>
       <b-button type="submit" variant="primary">下载</b-button>
     </b-form>
+    <div v-for="item in items" :key="item.video">
+      <b-progress :value="progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
+      <p>时长: {{ item.duration }}</p>
 
-    <b-progress :value="progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
-    <p>下载地址: {{ video }}</p>
-
-    <b-embed type="video" aspect="4by3" controls>
-      <source v-for="item in items" :key="item.video" :src="item.video" type='video/mp4'/>
-    </b-embed>
+      <b-embed type="video" aspect="4by3" controls>
+        <source  :src="item.video" type='video/mp4'/>
+      </b-embed>
+    </div>
   </div>
 </template>
 
@@ -52,6 +53,7 @@ export default {
       progress: 10,
       striped: true,
       animate: true,
+      duration: 0,
 
       show: true,
       seed: '',
