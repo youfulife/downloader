@@ -8,9 +8,8 @@ import requests
 import os
 import sys
 
-# file_dir = os.path.dirname(__file__)
-# sys.path.append(file_dir)
-# print(sys.path)
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
 import ffmpeg
 
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)

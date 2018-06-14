@@ -18,7 +18,7 @@
       <b-button type="submit" variant="primary">下载</b-button>
     </b-form>
     <div v-for="item in items" :key="item.video">
-      <b-progress :value="progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
+      <b-progress :value="item.progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
       <p>时长: {{ item.duration }}</p>
 
       <b-embed type="video" aspect="4by3" controls>
@@ -64,6 +64,19 @@ export default {
   mounted () {
     this.timer = setInterval(() => {
       this.progress = 25 + (Math.random() * 75)
+      const path = 'http://localhost:5000/video/progress'
+      for(item in this.items) {
+        axios.get(path, {
+          filename: this.seed
+          })
+          .then(response => {
+            item.progress = response.data.out_time_ms
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      
+      }
     }, 2000)
   },
   beforeDestroy () {

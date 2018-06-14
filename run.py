@@ -5,6 +5,7 @@ from backend import zhihu
 from furl import furl
 import sys
 import os
+import hashlib
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -17,13 +18,20 @@ app = Flask(__name__,
 
 cors = CORS(app, resources={"/video/*": {"origins": "*"}})
 
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
-@app.route('/api/random')
-def random_number():
-    response = {
-        'randomNumber': randint(1, 100)
-    }
-    return jsonify(response)
+
+@app.route('/video/progress')
+def video_progress():
+    filename = request.args.get('filename')
+    key = hashlib.md5(filename).encode('utf-8')).hexdigest()
+    value = r.get(key)
+    return jsonify({
+        'status': 'success',
+        'filename': filename,
+        'out_time_ms': value,
+        "message": "当前下载进度"
+    })
 
 
 @app.route('/video/zhihu', methods=['GET', 'POST'])
