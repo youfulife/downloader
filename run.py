@@ -2,10 +2,11 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for
 from flask_cors import CORS
 from random import *
 from backend import zhihu
-from furl import furl
+# from furl import furl
 import sys
 import os
 import hashlib
+import redis
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,6 +17,8 @@ app = Flask(__name__,
             static_folder="./dist/static",
             template_folder="./dist")
 
+app.config['JSON_AS_ASCII'] = False
+
 cors = CORS(app, resources={"/video/*": {"origins": "*"}})
 
 r = redis.Redis(host='localhost', port=6379, decode_responses=True)
@@ -23,13 +26,20 @@ r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 @app.route('/video/progress')
 def video_progress():
-    filename = request.args.get('filename')
-    key = hashlib.md5(filename).encode('utf-8')).hexdigest()
-    value = r.get(key)
+    filename = request.args.get('filename', None)
+    if filename is None:
+        return jsonify({
+        'status': 'failed',
+        'seconds': 0,
+        "message": "参数filename为空"
+    })
+    key = hashlib.md5(filename.encode('utf-8')).hexdigest()
+    value = r.get(key) or 0
+
     return jsonify({
         'status': 'success',
         'filename': filename,
-        'out_time_ms': value,
+        'seconds': round(float(value)/1000000.0),
         "message": "当前下载进度"
     })
 

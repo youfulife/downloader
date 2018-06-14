@@ -20,6 +20,7 @@
     <div v-for="item in items" :key="item.video">
       <b-progress :value="item.progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
       <p>时长: {{ item.duration }}</p>
+      <p>当前时长: {{ item }}</p>
 
       <b-embed type="video" aspect="4by3" controls>
         <source  :src="item.video" type='video/mp4'/>
@@ -50,7 +51,6 @@ export default {
   data () {
     return {
       // 进度条
-      progress: 10,
       striped: true,
       animate: true,
       duration: 0,
@@ -63,19 +63,20 @@ export default {
   },
   mounted () {
     this.timer = setInterval(() => {
-      this.progress = 25 + (Math.random() * 75)
       const path = 'http://localhost:5000/video/progress'
-      for(item in this.items) {
+      for (var i = 0; i < this.items.length; i++) {
+        var item = this.items[i]
         axios.get(path, {
-          filename: this.seed
-          })
+          params: {
+            filename: item.video
+          }
+        })
           .then(response => {
-            item.progress = response.data.out_time_ms
+            this.items[i].progress = response.data.seconds * 100.0 / item.duration
           })
           .catch(error => {
             console.log(error)
           })
-      
       }
     }, 2000)
   },

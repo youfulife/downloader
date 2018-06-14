@@ -7,6 +7,7 @@ import threading
 import requests
 import os
 import sys
+import hashlib
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
@@ -56,10 +57,11 @@ def yield_video_m3u8_url_from_video_ids(video_ids):
         yield video_id, m3u8_url
 
 
-def progress(m3u8_url, output_file):
+def progress(m3u8_url, directory, filename):
     # '/path/to/dist/static/video/zhihu/xxx-yyy.mp4'
-    key = output_file.split('/')[-1].split('.')[0]
-    cmd = "ffmpeg -v quiet -progress /dev/stdout -i '{input}' {output}".format(input=m3u8_url, output=output_file)
+    prefix = directory + '/dist/'
+    key = hashlib.md5(filename.encode('utf-8')).hexdigest()
+    cmd = "ffmpeg -v quiet -progress /dev/stdout -i '{input}' {output}".format(input=m3u8_url, output=prefix+filename)
     # cmd = "cat xxx.txt"
     print(cmd)
     child1 = subprocess.Popen(cmd, cwd=basedir, shell=True, stdout=subprocess.PIPE)
@@ -85,11 +87,10 @@ def download(url, directory):
     rets = []
 
     for idx, m3u8_url in m3u8_tuples:
-        prefix = directory + '/dist/'
         filename = 'static/video/zhihu/{}.mp4'.format(uuid.uuid4())
         print('download {}'.format(m3u8_url))
         duration = ffmpeg.duration_seconds(m3u8_url)
-        threading.Thread(target=progress, args=(m3u8_url, prefix+filename,)).start()
+        threading.Thread(target=progress, args=(m3u8_url, directory, filename,)).start()
         # ret_code = subprocess.check_call(['ffmpeg', '-v', 'quiet', '-progress', '/dev/stdout', '-i', m3u8_url, prefix+filename])
         if duration != 0:
             ret = {
