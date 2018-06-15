@@ -18,9 +18,9 @@
       <b-button type="submit" variant="primary">下载</b-button>
     </b-form>
     <div v-for="item in items" :key="item.video">
-      <b-progress :value="item.progress" variant="success" :striped="striped" :animated="animate" show-progress class="mb-2"></b-progress>
+      <b-progress :value="item.progress" variant="success" :striped="item.striped" :animated="item.animate" class="mb-2"></b-progress>
       <p>时长: {{ item.duration }}</p>
-      <p>当前时长: {{ item }}</p>
+      <p>当前时长: {{ item.progress }}</p>
 
       <b-embed type="video" aspect="4by3" controls>
         <source  :src="item.video" type='video/mp4'/>
@@ -50,11 +50,6 @@ export default {
   },
   data () {
     return {
-      // 进度条
-      striped: true,
-      animate: true,
-      duration: 0,
-
       show: true,
       seed: '',
       items: [],
@@ -72,7 +67,23 @@ export default {
           }
         })
           .then(response => {
-            this.items[i].progress = response.data.seconds * 100.0 / item.duration
+            // 进度条
+            // 0 还未开始，1 正在下载，2 下载完成
+            if (!item.started) {
+              var started = (response.data.seconds == 0) ? 0 : 1
+            } else {
+              var started = (response.data.seconds == 0) ? 2 : 1
+            }
+            var striped = (started == 1) ? true : false
+            var animate = (started == 1) ? true : false
+            item = Object.assign({}, item, {
+                        progress: Math.round(response.data.seconds * 100.0 / item.duration),
+                        striped: striped,
+                        animate: animate,
+                        started: started
+                    })
+            Vue.set(this.items, i, item)
+            
           })
           .catch(error => {
             console.log(error)
