@@ -76,20 +76,27 @@ export default {
             }
             var striped = (started == 1) ? true : false
             var animate = (started == 1) ? true : false
+            var progress = (started == 2) ? 100 : Math.round(response.data.seconds * 100.0 / item.duration)
             item = Object.assign({}, item, {
-                        progress: Math.round(response.data.seconds * 100.0 / item.duration),
+                        progress: progress,
                         striped: striped,
                         animate: animate,
                         started: started
                     })
-            Vue.set(this.items, i, item)
+            // 这里axios是异步，等执行完了，i的值已经变了，所以需要通过video找出需要修改的item下标，而不能直接用i。
+            for(var j = 0; j < this.items.length; j++) {
+              if (this.items[j].video === item.video) {
+                break
+              }
+            }
+            this.$set(this.items, j, item)
             
           })
           .catch(error => {
             console.log(error)
           })
       }
-    }, 2000)
+    }, 5000)
   },
   beforeDestroy () {
     clearInterval(this.timer)
