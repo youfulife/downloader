@@ -137,7 +137,7 @@ export default {
         url: this.seed
       })
         .then(response => {
-          this.items = response.data
+          this.items.push(...response.data)
         })
         .catch(error => {
           console.log(error)

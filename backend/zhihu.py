@@ -30,10 +30,12 @@ def get_video_ids_from_url(url):
     """
     回答或者文章的 url
     """
-    html = requests.get(url, headers=HEADERS).text
+    r = requests.get(url, headers=HEADERS)
+    r.encoding='utf-8'
+    html = r.text
     # print(html)
     video_ids = re.findall(r'data-lens-id="(\d+)"', html)
-    print(video_ids)
+    print("video_ids: ", video_ids)
     if video_ids:
         return set([int(video_id) for video_id in video_ids])
     return []
@@ -41,15 +43,16 @@ def get_video_ids_from_url(url):
 
 def yield_video_m3u8_url_from_video_ids(video_ids):
     for video_id in video_ids:
-        HEADERS['Referer'] = 'https://v.vzuu.com/video/{}'.format(video_id)
-        HEADERS['Origin'] = 'https://v.vzuu.com'
-        HEADERS['Host'] = 'lens.zhihu.com'
-        HEADERS['Content-Type'] = 'application/json'
-        HEADERS['Authorization'] = 'oauth c3cef7c66a1843f8b3a9e6a1e3160e20'
+        headers = {}
+        headers['Referer'] = 'https://v.vzuu.com/video/{}'.format(video_id)
+        headers['Origin'] = 'https://v.vzuu.com'
+        headers['Host'] = 'lens.zhihu.com'
+        headers['Content-Type'] = 'application/json'
+        headers['Authorization'] = 'oauth c3cef7c66a1843f8b3a9e6a1e3160e20'
 
         api_video_url = 'https://lens.zhihu.com/api/videos/{}'.format(int(video_id))
 
-        r = requests.get(api_video_url, headers=HEADERS)
+        r = requests.get(api_video_url, headers={**HEADERS, **headers})
         # print(json.dumps(dict(r.request.headers), indent=2, ensure_ascii=False))
         # print(r.text.encode('utf-8').decode('unicode_escape'))
         playlist = r.json()['playlist']
@@ -73,7 +76,7 @@ def progress(m3u8_url, directory, filename):
         
         if tmp[0] == 'out_time_ms':
             out_time_ms = tmp[1]
-            print(out_time_ms)
+            # print(out_time_ms)
             r.set(key, out_time_ms)
         else:
             if tmp[1] == 'end':
