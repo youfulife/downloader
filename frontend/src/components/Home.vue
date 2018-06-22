@@ -74,7 +74,7 @@ export default {
     },
     getProgress() {
       this.timer = setInterval(() => {
-        const path = 'http://localhost:5000/video/progress'
+        const path = 'http://downloader.dig404.com/video/progress'
         // 判断是否全部下载完成
         var completed = true;
         for (var i = 0; i < this.items.length; i++) {
@@ -132,7 +132,7 @@ export default {
       }, 5000)
     },
     download () {
-      const path = 'http://localhost:5000/video/zhihu'
+      const path = 'http://downloader.dig404.com/video/zhihu'
       axios.post(path, {
         url: this.seed
       })
