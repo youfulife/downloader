@@ -5,6 +5,5 @@
 __pycache__
 node_modules
 package-lock.json
-dist
 frontend/node_modules
 backend/venv
