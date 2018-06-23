@@ -26,7 +26,7 @@
         <!-- <p>时长: {{ item.duration }}</p>
         <p>当前时长: {{ item.progress }}</p> -->
         <b-embed type="video" aspect="16by9" controls>
-          <source  :src="item.video" type='video/mp4'/>
+          <source  :src="item.video" type='video/mp4' v-if="item.ok"/>
         </b-embed>
       </div>
     </div>
@@ -114,11 +114,16 @@ export default {
                           progress: progress,
                           striped: striped,
                           animate: animate,
+                          ok: false,
                           started: started
                       })
               // 这里axios是异步，等执行完了，i的值已经变了，所以需要通过video找出需要修改的item下标，而不能直接用i。
               for(var j = 0; j < this.items.length; j++) {
                 if (this.items[j].video === item.video) {
+                  // 下载完成后显示video
+                  if(item.started == 2) {
+                    item.ok = true
+                  }
                   break
                 }
               }
