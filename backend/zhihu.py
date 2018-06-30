@@ -18,7 +18,6 @@ r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-# 下边 cookie 请打开知乎打开浏览器开发者工具随便找一个请求复制 cookie，千万不要泄露出去
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
 }
