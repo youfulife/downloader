@@ -20,6 +20,15 @@
         </b-input-group>
       </b-form-group>
     </b-form>
+    
+    <b-row class="align-items-center justify-content-center">
+      <div v-for="item in [0, 1, 2, 3, 4]" :key=item.id>
+        <b-col >
+          <h1><b-badge>0</b-badge></h1>
+        </b-col>
+      </div>
+    </b-row>
+
     <div v-for="item in items" :key="item.video" class="col-md-6">
       <div class="card">
         <b-progress :value="item.progress" variant="success" :striped="item.striped" :animated="item.animate" class="mb-2"></b-progress>
