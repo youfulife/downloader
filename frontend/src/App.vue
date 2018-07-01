@@ -1,6 +1,17 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    
+    <b-container class="p-4">
+      <b-row>
+        <b-col>
+          <b-img  left fluid :src="require('./assets/logo.png')" />
+        </b-col>
+        <b-col>
+          <b-img  right fluid width="200" height="200" :src="require('./assets/qrcode.png')" />
+        </b-col>
+      </b-row>
+    </b-container>
+
     <router-view/>
   </div>
 </template>
