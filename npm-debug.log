@@ -2,14 +2,14 @@
 1 verbose cli [ '/usr/local/Cellar/node/8.0.0_1/bin/node',
 1 verbose cli   '/usr/local/bin/npm',
 1 verbose cli   'run',
-1 verbose cli   'build' ]
+1 verbose cli   'dev' ]
 2 info using npm@4.1.2
 3 info using node@v8.0.0
 4 verbose config Skipping project config: /Users/youfu/.npmrc. (matches userconfig)
 5 verbose stack Error: ENOENT: no such file or directory, open '/Users/youfu/package.json'
 6 verbose cwd /Users/youfu/downloader
 7 error Darwin 16.7.0
-8 error argv "/usr/local/Cellar/node/8.0.0_1/bin/node" "/usr/local/bin/npm" "run" "build"
+8 error argv "/usr/local/Cellar/node/8.0.0_1/bin/node" "/usr/local/bin/npm" "run" "dev"
 9 error node v8.0.0
 10 error npm  v4.1.2
 11 error path /Users/youfu/package.json
